@@ -36,6 +36,30 @@ def blurSurf(surface, amt):
     return surf
 
 
+def interface(screen, mode):
+    # create_button(screen, (50, 25), (191, 191, 191), (10, 10), 2)
+    color_rect = 'white'
+    color_text = 'white'
+    if mode == 'map':
+        text = 'карта'
+        w_t = 56
+        color_rect = (43, 43, 43)
+        color_text = 'white'
+    elif mode == 'sat':
+        text = 'спутник'
+        w_t = 76
+        color_rect = 'white'
+        color_text = 'black'
+    else:
+        text = 'гибрид'
+        w_t = 72
+        color_rect = 'white'
+        color_text = 'black'
+
+    create_button(screen, (w_t, 25), color_rect, (10, 10))
+    write(screen, text, 15, 22, color_text, 25)
+
+
 def pause(screen, screenshot):
     blur_surf = Surface((WIN_WIDTH, WIN_HEIGHT), pygame.SRCALPHA)
     blur_surf.blit(screenshot, (0, 0))
