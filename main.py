@@ -6,13 +6,41 @@ import math
 
 my_step = 0.001
 
+toponym_to_find = 'Москва, инициативная улица, 1'
+
+
+geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
+
+geocoder_params = {
+    "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
+    "geocode": toponym_to_find,
+    "format": "json"}
+
+response = requests.get(geocoder_api_server, params=geocoder_params)
+
+if not response:
+    # обработка ошибочной ситуации
+    pass
+
+# Преобразуем ответ в json-объект
+json_response = response.json()
+# Получаем первый топоним из ответа геокодера.
+toponym = json_response["response"]["GeoObjectCollection"][
+    "featureMember"][0]["GeoObject"]
+# Координаты центра топонима:
+toponym_coodrinates = toponym["Point"]["pos"]
+# Долгота и широта:
+toponym_longitude, toponym_lattitude = map(float, toponym_coodrinates.split(" "))
+
+coordinates = ','.join([str(toponym_longitude), str(toponym_lattitude)])
+
 
 # Создайте оконное приложение, отображающее карту по координатам и в масштабе, который задаётся программно.
 
 class MapParams(object):
-    def __init__(self):
-        self.lat = 61.665279  # Координаты центра карты на старте. Задал координаты университета
-        self.lon = 50.813492
+    def __init__(self, coordinates):
+        self.lat = coordinates[0]  # Координаты центра карты на старте. Задал координаты университета
+        self.lon = coordinates[1]
         self.zoom = 16  # Масштаб карты на старте. Изменяется от 1 до 19
         self.type = "map"  # Другие значения "sat", "sat,skl"
 
@@ -21,9 +49,9 @@ class MapParams(object):
         return str(self.lon) + "," + str(self.lat)
 
     def update(self, event):
-        if event.key == pygame.K_PAGEUP and self.zoom < 19:  # Page_UP
+        if event.key == pygame.K_w and self.zoom < 19:  # Page_UP
             self.zoom += 1
-        elif event.key == pygame.K_PAGEDOWN and self.zoom > 2:  # Page_DOWN
+        elif event.key == pygame.K_s and self.zoom > 2:  # Page_DOWN
             self.zoom -= 1
 
         elif event.key == pygame.K_LEFT:  # LEFT_ARROW
@@ -62,7 +90,7 @@ def main():
     # Инициализируем pygame
     pygame.init()
     screen = pygame.display.set_mode((600, 450))
-    mp = MapParams()
+    mp = MapParams((toponym_lattitude, toponym_longitude))
 
     process = True
 
