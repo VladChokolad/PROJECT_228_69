@@ -87,6 +87,10 @@ def main():
     screen = pygame.display.set_mode((600, 450))
     mp = MapParams((toponym_lattitude, toponym_longitude))
 
+    free, pause = 0, 1
+
+    state = free
+
     process = True
 
     while process:
