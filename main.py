@@ -6,14 +6,14 @@ import math
 
 my_step = 0.001
 
-toponym_to_find = 'Москва, инициативная улица, 1'
+STOCK_OBJECT = 'Москва, инициативная улица, 1'
 
 
 geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
 
 geocoder_params = {
     "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
-    "geocode": toponym_to_find,
+    "geocode": STOCK_OBJECT,
     "format": "json"}
 
 response = requests.get(geocoder_api_server, params=geocoder_params)
@@ -49,9 +49,9 @@ class MapParams(object):
         return str(self.lon) + "," + str(self.lat)
 
     def update(self, event):
-        if event.key == pygame.K_w and self.zoom < 19:  # Page_UP
+        if event.key == pygame.K_COMMA and self.zoom < 19:  # Page_UP
             self.zoom += 1
-        elif event.key == pygame.K_s and self.zoom > 2:  # Page_DOWN
+        elif event.key == pygame.K_PERIOD and self.zoom > 2:  # Page_DOWN
             self.zoom -= 1
 
         elif event.key == pygame.K_LEFT:  # LEFT_ARROW
