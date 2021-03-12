@@ -121,7 +121,14 @@ def main():
                     mp.update(event)
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if 10 < event.pos[1] < 34:
-                        if 10 < event.pos[0] < 86:
+                        if 10 < event.pos[0] < 35:
+                            screen.fill('black')
+                            screen.blit(pygame.image.load(map_file), (0, 0))
+                            back = screen.subsurface(screen.get_rect())
+                            screenshot = Surface(size)
+                            screenshot.blit(back, (0, 0))
+                            state = pause
+                        if 40 < event.pos[0] < 116:
                             mp.type += 1
                             if mp.type > 2:
                                 mp.type -= 3

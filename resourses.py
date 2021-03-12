@@ -56,8 +56,11 @@ def interface(screen, mode):
         color_rect = 'white'
         color_text = 'black'
 
-    create_button(screen, (w_t, 25), color_rect, (10, 10))
-    write(screen, text, 15, 22, color_text, 25)
+    create_button(screen, (25, 25), color_rect, (10, 10))
+    write(screen, '<', 15, 21, color_text, 38)
+    # pygame.draw.lines(screen, color_text, False, [[27, 15], [16, 22], [27, 29]], 2)
+    create_button(screen, (w_t, 25), color_rect, (40, 10))
+    write(screen, text, 45, 22, color_text, 25)
 
 
 def pause(screen, screenshot):
