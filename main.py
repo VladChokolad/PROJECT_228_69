@@ -2,6 +2,9 @@ import os
 import pygame
 import requests
 import sys
+import math
+
+my_step = 0.008
 
 
 # Создайте оконное приложение, отображающее карту по координатам и в масштабе, который задаётся программно.
@@ -17,8 +20,24 @@ class MapParams(object):
     def ll(self):
         return str(self.lon) + "," + str(self.lat)
 
+    def update(self, event):
+        if event.key == 280 and self.zoom < 19:  # Page_UP
+            self.zoom += 1
+        elif event.key == 281 and self.zoom > 2:  # Page_DOWN
+            self.zoom -= 1
 
-# Создание карты с соответствующими параметрами.
+        elif event.key == 276:  # LEFT_ARROW
+            self.lon -= my_step * math.pow(2, 15 - self.zoom)
+        elif event.key == 275:  # RIGHT_ARROW
+            self.lon += my_step * math.pow(2, 15 - self.zoom)
+        elif event.key == 273 and self.lat < 85:  # UP_ARROW
+            self.lat += my_step * math.pow(2, 15 - self.zoom)
+        elif event.key == 274 and self.lat > -85:  # DOWN_ARROW
+            self.lat -= my_step * math.pow(2, 15 - self.zoom)
+
+        # Создание карты с соответствующими параметрами.
+
+
 def load_map(mp):
     map_request = "http://static-maps.yandex.ru/1.x/?ll={ll}&z={z}&l={type}".format(ll=mp.ll(), z=mp.zoom, type=mp.type)
     response = requests.get(map_request)
@@ -51,6 +70,9 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:  # Выход из программы
                 process = False
+            elif event.type == pygame.KEYUP:  # Обрабатываем различные нажатые клавиши.
+                mp.update(event)
+
         # Создаем файл
         map_file = load_map(mp)
         # Рисуем картинку, загружаемую из только что созданного файла.
