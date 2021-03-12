@@ -35,14 +35,13 @@ toponym_longitude, toponym_lattitude = map(float, toponym_coodrinates.split(" ")
 coordinates = ','.join([str(toponym_longitude), str(toponym_lattitude)])
 
 
-# Создайте оконное приложение, отображающее карту по координатам и в масштабе, который задаётся программно.
-
 class MapParams(object):
     def __init__(self, coordinates):
         self.lat = coordinates[0]  # Координаты центра карты на старте. Задал координаты университета
         self.lon = coordinates[1]
         self.zoom = 16  # Масштаб карты на старте. Изменяется от 1 до 19
-        self.type = "map"  # Другие значения "sat", "sat,skl"
+        self.type = 0
+        self.types = ['map', 'sat', 'sat,skl']
 
     # Преобразование координат в параметр ll, требуется без пробелов, через запятую и без скобок
     def ll(self):
@@ -63,11 +62,9 @@ class MapParams(object):
         elif event.key == pygame.K_DOWN and self.lat > -85:  # DOWN_ARROW
             self.lat -= my_step * math.pow(2, 15 - self.zoom)
 
-        # Создание карты с соответствующими параметрами.
-
 
 def load_map(mp):
-    map_request = "http://static-maps.yandex.ru/1.x/?ll={ll}&z={z}&l={type}".format(ll=mp.ll(), z=mp.zoom, type=mp.type)
+    map_request = f"http://static-maps.yandex.ru/1.x/?ll={mp.ll()}&z={mp.zoom}&l={mp.types[mp.type]}"
     response = requests.get(map_request)
     if not response:
         print("Ошибка выполнения запроса:")
@@ -75,7 +72,6 @@ def load_map(mp):
         print("Http статус:", response.status_code, "(", response.reason, ")")
         sys.exit(1)
 
-    # Запись полученного изображения в файл.
     map_file = "map.png"
     try:
         with open(map_file, "wb") as file:
@@ -98,7 +94,11 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:  # Выход из программы
                 process = False
-            elif event.type == pygame.KEYUP:  # Обрабатываем различные нажатые клавиши.
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_s:
+                    mp.type += 1
+                    if mp.type > 2:
+                        mp.type -= 3
                 mp.update(event)
 
         # Создаем файл
