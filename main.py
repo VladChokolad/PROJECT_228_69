@@ -3,6 +3,10 @@ import pygame
 import requests
 import sys
 import math
+from pygame import Surface
+import resourses
+
+size = (600, 450)
 
 my_step = 0.001
 
@@ -84,9 +88,12 @@ def load_map(mp):
 def main():
     # Инициализируем pygame
     pygame.init()
-    screen = pygame.display.set_mode((600, 450))
+    screen = pygame.display.set_mode(size, pygame.SRCALPHA)
     mp = MapParams((toponym_lattitude, toponym_longitude))
     map_file = None
+    screenshot = None
+
+    pygame.display.set_caption("GeoSearch")
 
     free, pause = 0, 1
 
@@ -104,14 +111,30 @@ def main():
                         mp.type += 1
                         if mp.type > 2:
                             mp.type -= 3
+                    elif event.key == pygame.K_ESCAPE:
+                        back = screen.subsurface(screen.get_rect())
+                        screenshot = Surface(size)
+                        screenshot.blit(back, (0, 0))
+                        state = pause
+
                     mp.update(event)
             map_file = load_map(mp)
+            screen.fill('black')
             screen.blit(pygame.image.load(map_file), (0, 0))
 
         elif state == pause:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:  # Выход из программы
                     process = False
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if 235 < event.pos[1] < 258:
+                        if 385 < event.pos[0] < 412:
+                            state = free
+                        elif 420 < event.pos[0] < 468:
+                            process = False
+                    print(event.pos)
+            screen.fill('black')
+            resourses.pause(screen, screenshot)
 
         pygame.display.flip()
     pygame.quit()

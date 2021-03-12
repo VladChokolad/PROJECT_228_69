@@ -1,4 +1,8 @@
 import pygame
+from pygame import Surface
+
+WIN_WIDTH = 600
+WIN_HEIGHT = 450
 
 
 def write(screen, text, pos_x, pos_y, color, size):
@@ -9,9 +13,12 @@ def write(screen, text, pos_x, pos_y, color, size):
     return
 
 
-def create_button(screen, size, color, pos):
+def create_button(screen, size, color, pos, border=None):
     new_button = pygame.Rect(pos[0], pos[1], size[0], size[1])
-    pygame.draw.rect(screen, color, new_button, 3)
+    if border:
+        pygame.draw.rect(screen, color, new_button, border)
+    else:
+        pygame.draw.rect(screen, color, new_button)
 
 
 def blurSurf(surface, amt):
@@ -27,4 +34,29 @@ def blurSurf(surface, amt):
     surf = pygame.transform.smoothscale(surface, scale_size)
     surf = pygame.transform.smoothscale(surf, surf_size)
     return surf
+
+
+def pause(screen, screenshot):
+    blur_surf = Surface((WIN_WIDTH, WIN_HEIGHT), pygame.SRCALPHA)
+    blur_surf.blit(screenshot, (0, 0))
+    new_serf = blurSurf(blur_surf, 15)
+    screen.blit(new_serf, (0, 0))
+
+    w, h = 350, 80
+
+    pygame.draw.rect(screen, pygame.Color('white'), ((WIN_WIDTH // 2) - (w // 2),
+                                                     (WIN_HEIGHT // 2) - (h // 2), w, h))
+
+    write(screen, 'Вы уверены, что хотите выйти?', (WIN_WIDTH // 2) - (300 // 2) - 5,
+          (WIN_HEIGHT // 2) - 13, (77, 77, 77), 30)
+
+    create_button(screen, (28, 22), (230, 230, 230),
+                  ((WIN_WIDTH // 2) + (w // 2) - 90, ((WIN_HEIGHT // 2) + (h // 2) - 30)))
+    create_button(screen, (48, 22), (230, 230, 230), ((WIN_WIDTH // 2) + (w // 2) - 55,
+                                                      ((WIN_HEIGHT // 2) + (h // 2) - 30)))
+
+    write(screen, 'Нет',
+          (WIN_WIDTH // 2) + (w // 2) - 87, ((WIN_HEIGHT // 2) + (h // 2) - 20), (77, 77, 77), 19)
+    write(screen, 'Выйти',
+          (WIN_WIDTH // 2) + (w // 2) - 52, ((WIN_HEIGHT // 2) + (h // 2) - 20), (77, 77, 77), 19)
 
