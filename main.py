@@ -118,8 +118,14 @@ def main():
                         screenshot = Surface(size)
                         screenshot.blit(back, (0, 0))
                         state = pause
-
                     mp.update(event)
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if 10 < event.pos[1] < 34:
+                        if 10 < event.pos[0] < 86:
+                            mp.type += 1
+                            if mp.type > 2:
+                                mp.type -= 3
+                    print(event.pos)
             map_file = load_map(mp)
             screen.fill('black')
             screen.blit(pygame.image.load(map_file), (0, 0))
