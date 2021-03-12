@@ -86,6 +86,7 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode((600, 450))
     mp = MapParams((toponym_lattitude, toponym_longitude))
+    map_file = None
 
     free, pause = 0, 1
 
@@ -94,18 +95,24 @@ def main():
     process = True
 
     while process:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:  # Выход из программы
-                process = False
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_s:
-                    mp.type += 1
-                    if mp.type > 2:
-                        mp.type -= 3
-                mp.update(event)
+        if state == free:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:  # Выход из программы
+                    process = False
+                if event.type == pygame.KEYUP:
+                    if event.key == pygame.K_s:
+                        mp.type += 1
+                        if mp.type > 2:
+                            mp.type -= 3
+                    mp.update(event)
+            map_file = load_map(mp)
+            screen.blit(pygame.image.load(map_file), (0, 0))
 
-        map_file = load_map(mp)
-        screen.blit(pygame.image.load(map_file), (0, 0))
+        elif state == pause:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:  # Выход из программы
+                    process = False
+
         pygame.display.flip()
     pygame.quit()
     os.remove(map_file)
