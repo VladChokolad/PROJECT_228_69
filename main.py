@@ -4,7 +4,7 @@ import requests
 import sys
 import math
 
-my_step = 0.008
+my_step = 0.001
 
 
 # Создайте оконное приложение, отображающее карту по координатам и в масштабе, который задаётся программно.
@@ -21,18 +21,18 @@ class MapParams(object):
         return str(self.lon) + "," + str(self.lat)
 
     def update(self, event):
-        if event.key == 280 and self.zoom < 19:  # Page_UP
+        if event.key == pygame.K_PAGEUP and self.zoom < 19:  # Page_UP
             self.zoom += 1
-        elif event.key == 281 and self.zoom > 2:  # Page_DOWN
+        elif event.key == pygame.K_PAGEDOWN and self.zoom > 2:  # Page_DOWN
             self.zoom -= 1
 
-        elif event.key == 276:  # LEFT_ARROW
+        elif event.key == pygame.K_LEFT:  # LEFT_ARROW
             self.lon -= my_step * math.pow(2, 15 - self.zoom)
-        elif event.key == 275:  # RIGHT_ARROW
+        elif event.key == pygame.K_RIGHT:  # RIGHT_ARROW
             self.lon += my_step * math.pow(2, 15 - self.zoom)
-        elif event.key == 273 and self.lat < 85:  # UP_ARROW
+        elif event.key == pygame.K_UP and self.lat < 85:  # UP_ARROW
             self.lat += my_step * math.pow(2, 15 - self.zoom)
-        elif event.key == 274 and self.lat > -85:  # DOWN_ARROW
+        elif event.key == pygame.K_DOWN and self.lat > -85:  # DOWN_ARROW
             self.lat -= my_step * math.pow(2, 15 - self.zoom)
 
         # Создание карты с соответствующими параметрами.
