@@ -44,10 +44,13 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode((600, 450))
     mp = MapParams()
-    while True:
-        event = pygame.event.wait()
-        if event.type == pygame.QUIT:  # Выход из программы
-            break
+
+    process = True
+
+    while process:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:  # Выход из программы
+                process = False
         # Создаем файл
         map_file = load_map(mp)
         # Рисуем картинку, загружаемую из только что созданного файла.
