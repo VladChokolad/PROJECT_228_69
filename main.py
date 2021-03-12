@@ -37,13 +37,12 @@ coordinates = ','.join([str(toponym_longitude), str(toponym_lattitude)])
 
 class MapParams(object):
     def __init__(self, coordinates):
-        self.lat = coordinates[0]  # Координаты центра карты на старте. Задал координаты университета
+        self.lat = coordinates[0]
         self.lon = coordinates[1]
-        self.zoom = 16  # Масштаб карты на старте. Изменяется от 1 до 19
+        self.zoom = 16
         self.type = 0
         self.types = ['map', 'sat', 'sat,skl']
 
-    # Преобразование координат в параметр ll, требуется без пробелов, через запятую и без скобок
     def ll(self):
         return str(self.lon) + "," + str(self.lat)
 
@@ -101,13 +100,10 @@ def main():
                         mp.type -= 3
                 mp.update(event)
 
-        # Создаем файл
         map_file = load_map(mp)
-        # Рисуем картинку, загружаемую из только что созданного файла.
         screen.blit(pygame.image.load(map_file), (0, 0))
         pygame.display.flip()
     pygame.quit()
-    # Удаляем файл с изображением.
     os.remove(map_file)
 
 
