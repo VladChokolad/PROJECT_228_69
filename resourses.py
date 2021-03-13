@@ -36,7 +36,7 @@ def blurSurf(surface, amt):
     return surf
 
 
-def interface(screen, mode):
+def interface(screen, mode, screenshot):
     # create_button(screen, (50, 25), (191, 191, 191), (10, 10), 2)
     color_rect = 'white'
     color_text = 'white'
@@ -55,6 +55,11 @@ def interface(screen, mode):
         w_t = 72
         color_rect = 'white'
         color_text = 'black'
+
+    blur_surf = Surface((WIN_WIDTH, 45), pygame.SRCALPHA)
+    blur_surf.blit(screenshot, (0, 0))
+    menu_bar = blurSurf(blur_surf, 40)
+    screen.blit(menu_bar, (0, 0))
 
     create_button(screen, (25, 25), color_rect, (10, 10))
     write(screen, '<', 15, 21, color_text, 38)

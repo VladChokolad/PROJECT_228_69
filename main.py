@@ -136,7 +136,10 @@ def main():
             map_file = load_map(mp)
             screen.fill('black')
             screen.blit(pygame.image.load(map_file), (0, 0))
-            resourses.interface(screen, mp.types[mp.type])
+            back = screen.subsurface(screen.get_rect())
+            screenshot = Surface(size)
+            screenshot.blit(back, (0, 0))
+            resourses.interface(screen, mp.types[mp.type], screenshot)
 
         elif state == pause:
             for event in pygame.event.get():
