@@ -5,75 +5,98 @@ import sys
 import math
 from pygame import Surface
 import resourses
+import ctypes
 
 size = (600, 450)
 
-my_step = 0.001
+step = 0.001
+
+cur_req = ''
+
+vocab = {102: 'а', 97: 'ф'}
 
 STOCK_OBJECT = 'Москва, инициативная улица, 1'
 
 
-geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
+def req_search(req):
+    geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
 
-geocoder_params = {
-    "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
-    "geocode": STOCK_OBJECT,
-    "format": "json"}
+    geocoder_params = {
+        "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
+        "geocode": STOCK_OBJECT,
+        "format": "json"}
 
-response = requests.get(geocoder_api_server, params=geocoder_params)
+    response = requests.get(geocoder_api_server, params=geocoder_params)
 
-if not response:
-    pass
+    if not response:
+        pass
 
-# Преобразуем ответ в json-объект
-json_response = response.json()
-# Получаем первый топоним из ответа геокодера.
-toponym = json_response["response"]["GeoObjectCollection"][
-    "featureMember"][0]["GeoObject"]
-# Координаты центра топонима:
-toponym_coodrinates = toponym["Point"]["pos"]
-# Долгота и широта:
-toponym_longitude, toponym_lattitude = map(float, toponym_coodrinates.split(" "))
+    # Преобразуем ответ в json-объект
+    json_response = response.json()
+    # Получаем первый топоним из ответа геокодера.
+    toponym = json_response["response"]["GeoObjectCollection"][
+        "featureMember"][0]["GeoObject"]
+    # Координаты центра топонима:
+    toponym_coodrinates = toponym["Point"]["pos"]
+    # Долгота и широта:
+    toponym_longitude, toponym_lattitude = map(float, toponym_coodrinates.split(" "))
 
-coordinates = ','.join([str(toponym_longitude), str(toponym_lattitude)])
+    coordinates = ','.join([str(toponym_longitude), str(toponym_lattitude)])
+    return toponym_longitude, toponym_lattitude
+
+
+toponym_longitude, toponym_lattitude = req_search(STOCK_OBJECT)
+
+
+def get_layout():
+    u = ctypes.windll.LoadLibrary("user32.dll")
+    pf = getattr(u, "GetKeyboardLayout")
+    if hex(pf(0)) == '0x4190419':
+        return 'ru'
+    if hex(pf(0)) == '0x4090409':
+        return 'en'
 
 
 class MapParams(object):
-    def __init__(self, coordinates):
+    def __init__(self, coordinates, zoom):
         self.lat = coordinates[0]
         self.lon = coordinates[1]
-        self.zoom = 16
+        self.zoom = zoom
         self.type = 0
         self.types = ['map', 'sat', 'sat,skl']
 
     def ll(self):
         return str(self.lon) + "," + str(self.lat)
 
-    def update(self, event):
-        if event.key == pygame.K_COMMA and self.zoom < 19:  # Page_UP
+    def update(self, event, search):
+        global cur_req
+        if event.key == pygame.K_COMMA or event.key == 1073741921 and self.zoom < 19:  # Page_UP
             self.zoom += 1
-        elif event.key == pygame.K_PERIOD and self.zoom > 2:  # Page_DOWN
+        elif event.key == pygame.K_PERIOD or event.key == 1073741915 and self.zoom > 2:  # Page_DOWN
             self.zoom -= 1
 
         elif event.key == pygame.K_LEFT:  # LEFT_ARROW
-            self.lon -= my_step * math.pow(2, 15 - self.zoom)
+            self.lon -= step * math.pow(2, 15 - self.zoom)
         elif event.key == pygame.K_RIGHT:  # RIGHT_ARROW
-            self.lon += my_step * math.pow(2, 15 - self.zoom)
+            self.lon += step * math.pow(2, 15 - self.zoom)
         elif event.key == pygame.K_UP and self.lat < 85:  # UP_ARROW
-            self.lat += my_step * math.pow(2, 15 - self.zoom)
+            self.lat += step * math.pow(2, 15 - self.zoom)
         elif event.key == pygame.K_DOWN and self.lat > -85:  # DOWN_ARROW
-            self.lat -= my_step * math.pow(2, 15 - self.zoom)
+            self.lat -= step * math.pow(2, 15 - self.zoom)
+        elif event.key in vocab and len(cur_req) < 30 and search:
+            cur_req += vocab[event.key]
 
 
 def main():
+    global cur_req
     # Инициализируем pygame
     pygame.init()
     screen = pygame.display.set_mode(size, pygame.SRCALPHA)
-    mp = MapParams((toponym_lattitude, toponym_longitude))
+    mp = MapParams((toponym_lattitude, toponym_longitude), 16)
     map_file = None
     screenshot = None
 
-    pygame.display.set_caption("GeoSearch")
+    pygame.display.set_caption("little Yandex.Map")
 
     free, pause = 0, 1
 
@@ -83,42 +106,51 @@ def main():
 
     clock = pygame.time.Clock()
 
-    map_file = resourses.update(screen, mp)
+    search = False
+
+    map_file = resourses.update(screen, mp, search)
 
     while process:
         if state == free:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:  # Выход из программы
                     process = False
-                if event.type == pygame.KEYUP:
-                    if event.key == pygame.K_s:
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_s and not search:
                         mp.type += 1
                         if mp.type > 2:
                             mp.type -= 3
                     elif event.key == pygame.K_ESCAPE:
                         screen.fill('black')
-                        map_file = resourses.update(screen, mp)
+                        map_file = resourses.update(screen, mp, search)
                         back = screen.subsurface(screen.get_rect())
                         screenshot = Surface(size)
                         screenshot.blit(back, (0, 0))
                         state = pause
-                    mp.update(event)
+                    mp.update(event, search)
+                    print(event.key)
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if 10 < event.pos[1] < 34:
                         if 10 < event.pos[0] < 35:
                             screen.fill('black')
-                            map_file = resourses.update(screen, mp)
+                            map_file = resourses.update(screen, mp, search)
                             back = screen.subsurface(screen.get_rect())
                             screenshot = Surface(size)
                             screenshot.blit(back, (0, 0))
                             state = pause
-                        if 238 < event.pos[0] < 300:
+                        elif 525 < event.pos[0] < 588:
                             mp.type += 1
                             if mp.type > 2:
                                 mp.type -= 3
+                        elif 445 < event.pos[0] < 460 and search:
+                            search = False
+                            cur_req = ''
+                        elif 40 < event.pos[0] < 516 and not search:
+                            search = True
                     print(event.pos)
-            resourses.update(screen, mp, True)
+            resourses.update(screen, mp, search, True)
+            resourses.search_line(screen, cur_req)
 
         elif state == pause:
             for event in pygame.event.get():

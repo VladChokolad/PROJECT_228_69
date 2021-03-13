@@ -58,7 +58,7 @@ def blurSurf(surface, amt):
     return surf
 
 
-def update(screen, mp, inter=False):
+def update(screen, mp, search, inter=False):
     map_file = load_map(mp)
     screen.fill('black')
     screen.blit(pygame.image.load(map_file), (0, 0))
@@ -66,28 +66,37 @@ def update(screen, mp, inter=False):
     screenshot = Surface(size)
     screenshot.blit(back, (0, 0))
     if inter:
-        interface(screen, mp.types[mp.type], screenshot)
+        interface(screen, mp.types[mp.type], screenshot, search)
     return map_file
 
 
-def interface(screen, mode, screenshot):
+def search_line(screen, text):
+    if len(text) < 1:
+        text = 'Поиск мест и адресов'
+    write(screen, text, 46, 22, (191, 191, 191), 21)
+
+
+def interface(screen, mode, screenshot, search):
     color_rect = 'white'
     color_text = 'white'
     if mode == 'map':
-        text = 'карта'
-        w_t = 45
+        text = 'схема'
+        w_t = 63
         color_rect = (43, 43, 43)
         darkness = 12
+        ex = 9
     elif mode == 'sat':
         text = 'спутник'
         w_t = 63
         color_rect = (43, 43, 43)
         darkness = 0
+        ex = 0
     else:
         text = 'гибрид'
-        w_t = 58
+        w_t = 63
         color_rect = (43, 43, 43)
         darkness = 0
+        ex = 2
 
     # menu_bar
     blur_surf = Surface((WIN_WIDTH, 44), pygame.SRCALPHA)
@@ -98,17 +107,37 @@ def interface(screen, mode, screenshot):
     menu_bar = blurSurf(blur_surf, 44)
     screen.blit(menu_bar, (0, 0))
 
-    create_button(screen, (240 + w_t, 34), 'white', (5, 5))
+    #  white bar
+    create_button(screen, (WIN_WIDTH - 10, 34), 'white', (5, 5))
 
+    # menu icon
     y = 16
     b = 2
     for i in range(3):
         pygame.draw.line(screen, color_rect, [14, y], [30, y], b)
         y += 5
-    write(screen, text, 237, 22, color_rect, 25)
+
+    # mode text
+    write(screen, text, WIN_WIDTH - 12 - w_t + ex, 22, color_rect, 24)
 
     # search line
-    create_button(screen, (190, 24), (240, 240, 240), (40, 10))
+    if search:
+        search_line_width = WIN_WIDTH - 59 - w_t - 52
+        create_button(screen, (search_line_width, 24), (240, 240, 240), (40, 10))
+
+        #  to find button
+        create_button(screen, (46, 24), (94, 148, 255), (search_line_width + 46, 10))
+        write(screen, 'Найти', search_line_width + 50, 22, 'white', 20)
+
+        # cancel
+        create_button(screen, (14, 14), (191, 191, 191), (search_line_width + 20, 15))
+
+        pygame.draw.line(screen, 'white', [search_line_width + 24, 15 + 4], [search_line_width + 24 + 5, 15 + 9], 2)
+
+        pygame.draw.line(screen, 'white', [search_line_width + 24, 15 + 9], [search_line_width + 24 + 5, 15 + 4], 2)
+    else:
+        search_line_width = WIN_WIDTH - 59 - w_t
+        create_button(screen, (search_line_width, 24), (240, 240, 240), (40, 10))
 
 
 def pause(screen, screenshot):
