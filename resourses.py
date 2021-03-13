@@ -70,8 +70,8 @@ def update(screen, mp, search, inter=False):
     return map_file
 
 
-def search_line(screen, text):
-    if len(text) < 1:
+def search_line(screen, text, search):
+    if len(text) < 1 and not search:
         text = 'Поиск мест и адресов'
     write(screen, text, 46, 22, (191, 191, 191), 21)
 
@@ -89,20 +89,23 @@ def interface(screen, mode, screenshot, search):
         text = 'спутник'
         w_t = 63
         color_rect = (43, 43, 43)
-        darkness = 0
+        darkness = -1
         ex = 0
     else:
         text = 'гибрид'
         w_t = 63
         color_rect = (43, 43, 43)
-        darkness = 0
+        darkness = -1
         ex = 2
 
     # menu_bar
     blur_surf = Surface((WIN_WIDTH, 44), pygame.SRCALPHA)
     blur_surf.blit(screenshot, (0, 0))
     d = Surface((WIN_WIDTH, 44), pygame.SRCALPHA)
-    d.fill((0, 0, 0, darkness))
+    if darkness < 0:
+        d.fill((255, 255, 255, 50))
+    else:
+        d.fill((0, 0, 0, darkness))
     blur_surf.blit(d, (0, 0))
     menu_bar = blurSurf(blur_surf, 44)
     screen.blit(menu_bar, (0, 0))
