@@ -66,25 +66,6 @@ class MapParams(object):
             self.lat -= my_step * math.pow(2, 15 - self.zoom)
 
 
-def load_map(mp):
-    map_request = f"http://static-maps.yandex.ru/1.x/?ll={mp.ll()}&z={mp.zoom}&l={mp.types[mp.type]}"
-    response = requests.get(map_request)
-    if not response:
-        print("Ошибка выполнения запроса:")
-        print(map_request)
-        print("Http статус:", response.status_code, "(", response.reason, ")")
-        sys.exit(1)
-
-    map_file = "map.png"
-    try:
-        with open(map_file, "wb") as file:
-            file.write(response.content)
-    except IOError as ex:
-        print("Ошибка записи временного файла:", ex)
-        sys.exit(2)
-    return map_file
-
-
 def main():
     # Инициализируем pygame
     pygame.init()
@@ -101,6 +82,8 @@ def main():
 
     process = True
 
+    resourses.update(screen, mp)
+
     while process:
         if state == free:
             for event in pygame.event.get():
@@ -113,17 +96,26 @@ def main():
                             mp.type -= 3
                     elif event.key == pygame.K_ESCAPE:
                         screen.fill('black')
-                        screen.blit(pygame.image.load(map_file), (0, 0))
+                        map_file = resourses.update(screen, mp)
                         back = screen.subsurface(screen.get_rect())
                         screenshot = Surface(size)
                         screenshot.blit(back, (0, 0))
                         state = pause
                     mp.update(event)
+
+                    # map_file = load_map(mp)
+                    # screen.fill('black')
+                    # screen.blit(pygame.image.load(map_file), (0, 0))
+                    # back = screen.subsurface(screen.get_rect())
+                    # screenshot = Surface(size)
+                    # screenshot.blit(back, (0, 0))
+                    # resourses.interface(screen, mp.types[mp.type], screenshot)
+
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if 10 < event.pos[1] < 34:
                         if 10 < event.pos[0] < 35:
                             screen.fill('black')
-                            screen.blit(pygame.image.load(map_file), (0, 0))
+                            map_file = resourses.update(screen, mp)
                             back = screen.subsurface(screen.get_rect())
                             screenshot = Surface(size)
                             screenshot.blit(back, (0, 0))
@@ -133,13 +125,7 @@ def main():
                             if mp.type > 2:
                                 mp.type -= 3
                     print(event.pos)
-            map_file = load_map(mp)
-            screen.fill('black')
-            screen.blit(pygame.image.load(map_file), (0, 0))
-            back = screen.subsurface(screen.get_rect())
-            screenshot = Surface(size)
-            screenshot.blit(back, (0, 0))
-            resourses.interface(screen, mp.types[mp.type], screenshot)
+            resourses.update(screen, mp, True)
 
         elif state == pause:
             for event in pygame.event.get():

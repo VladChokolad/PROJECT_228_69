@@ -1,8 +1,30 @@
 import pygame
 from pygame import Surface
+import requests
+import sys
 
 WIN_WIDTH = 600
 WIN_HEIGHT = 450
+size = (WIN_WIDTH, WIN_HEIGHT)
+
+
+def load_map(mp):
+    map_request = f"http://static-maps.yandex.ru/1.x/?ll={mp.ll()}&z={mp.zoom}&l={mp.types[mp.type]}"
+    response = requests.get(map_request)
+    if not response:
+        print("Ошибка выполнения запроса:")
+        print(map_request)
+        print("Http статус:", response.status_code, "(", response.reason, ")")
+        sys.exit(1)
+
+    map_file = "map.png"
+    try:
+        with open(map_file, "wb") as file:
+            file.write(response.content)
+    except IOError as ex:
+        print("Ошибка записи временного файла:", ex)
+        sys.exit(2)
+    return map_file
 
 
 def write(screen, text, pos_x, pos_y, color, size):
@@ -36,6 +58,18 @@ def blurSurf(surface, amt):
     return surf
 
 
+def update(screen, mp, inter=False):
+    map_file = load_map(mp)
+    screen.fill('black')
+    screen.blit(pygame.image.load(map_file), (0, 0))
+    back = screen.subsurface(screen.get_rect())
+    screenshot = Surface(size)
+    screenshot.blit(back, (0, 0))
+    if inter:
+        interface(screen, mp.types[mp.type], screenshot)
+    return map_file
+
+
 def interface(screen, mode, screenshot):
     # create_button(screen, (50, 25), (191, 191, 191), (10, 10), 2)
     color_rect = 'white'
@@ -56,13 +90,20 @@ def interface(screen, mode, screenshot):
         color_rect = 'white'
         color_text = 'black'
 
+    # menu_bar
     blur_surf = Surface((WIN_WIDTH, 45), pygame.SRCALPHA)
     blur_surf.blit(screenshot, (0, 0))
-    menu_bar = blurSurf(blur_surf, 40)
+    menu_bar = blurSurf(blur_surf, 44)
     screen.blit(menu_bar, (0, 0))
 
     create_button(screen, (25, 25), color_rect, (10, 10))
-    write(screen, '<', 15, 21, color_text, 38)
+
+    y = 16
+    b = 2
+    for i in range(3):
+        pygame.draw.line(screen, color_text, [14, y], [30, y], b)
+        y += 5
+    # write(screen, '<', 15, 21, color_text, 38)
     # pygame.draw.lines(screen, color_text, False, [[27, 15], [16, 22], [27, 29]], 2)
     create_button(screen, (w_t, 25), color_rect, (40, 10))
     write(screen, text, 45, 22, color_text, 25)
@@ -71,7 +112,7 @@ def interface(screen, mode, screenshot):
 def pause(screen, screenshot):
     blur_surf = Surface((WIN_WIDTH, WIN_HEIGHT), pygame.SRCALPHA)
     blur_surf.blit(screenshot, (0, 0))
-    new_serf = blurSurf(blur_surf, 15)
+    new_serf = blurSurf(blur_surf, 44)
     screen.blit(new_serf, (0, 0))
 
     w, h = 350, 80
