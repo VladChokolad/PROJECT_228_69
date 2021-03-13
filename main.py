@@ -13,7 +13,7 @@ step = 0.001
 
 cur_req = ''
 
-vocab = {102: 'а', 97: 'ф'}
+vocab = {102: 'а', 44: 'б', 100: "в", 117: "г", 108: "д", 116: "е", 1105: "ё", 1078: "ж", 113: "й"}
 
 STOCK_OBJECT = 'Москва, инициативная улица, 1'
 
@@ -70,9 +70,9 @@ class MapParams(object):
 
     def update(self, event, search):
         global cur_req
-        if event.key == pygame.K_COMMA or event.key == 1073741921 and self.zoom < 19:  # Page_UP
+        if event.key == 1073741921 and self.zoom < 19:  # Page_UP
             self.zoom += 1
-        elif event.key == pygame.K_PERIOD or event.key == 1073741915 and self.zoom > 2:  # Page_DOWN
+        elif event.key == 1073741915 and self.zoom > 2:  # Page_DOWN
             self.zoom -= 1
 
         elif event.key == pygame.K_LEFT:  # LEFT_ARROW
@@ -150,7 +150,7 @@ def main():
                             search = True
                     print(event.pos)
             resourses.update(screen, mp, search, True)
-            resourses.search_line(screen, cur_req)
+            resourses.search_line(screen, cur_req, search)
 
         elif state == pause:
             for event in pygame.event.get():
