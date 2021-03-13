@@ -30,7 +30,7 @@ def req_search(req):
 
     geocoder_params = {
         "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
-        "geocode": STOCK_OBJECT,
+        "geocode": req,
         "format": "json"}
 
     response = requests.get(geocoder_api_server, params=geocoder_params)
@@ -140,6 +140,8 @@ def main():
                         else:
                             search = False
                             cur_req = ''
+                    elif event.key == 13 and search:
+                        mp.lon, mp.lat = req_search(cur_req)
                     mp.update(event, search)
                     print(event.key)
 
