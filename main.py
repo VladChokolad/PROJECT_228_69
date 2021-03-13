@@ -77,9 +77,9 @@ class MapParams(object):
 
     def update(self, event, search):
         global cur_req
-        if event.key == pygame.K_COMMA or event.key == 1073741921 and self.zoom < 19:  # Page_UP
+        if event.key == 1073741921 and self.zoom < 19:  # Page_UP
             self.zoom += 1
-        elif event.key == pygame.K_PERIOD or event.key == 1073741915 and self.zoom > 2:  # Page_DOWN
+        elif event.key == 1073741915 and self.zoom > 2:  # Page_DOWN
             self.zoom -= 1
 
         elif event.key == pygame.K_LEFT:  # LEFT_ARROW
@@ -134,6 +134,12 @@ def main():
                         screenshot = Surface(size)
                         screenshot.blit(back, (0, 0))
                         state = pause
+                    elif event.key == pygame.K_BACKSPACE and search:
+                        if len(cur_req) > 1:
+                            cur_req = cur_req[:-1]
+                        else:
+                            search = False
+                            cur_req = ''
                     mp.update(event, search)
                     print(event.key)
 
@@ -157,7 +163,7 @@ def main():
                             search = True
                     print(event.pos)
             resourses.update(screen, mp, search, True)
-            resourses.search_line(screen, cur_req)
+            resourses.search_line(screen, cur_req, search)
 
         elif state == pause:
             for event in pygame.event.get():
