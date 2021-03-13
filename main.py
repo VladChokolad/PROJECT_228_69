@@ -82,7 +82,9 @@ def main():
 
     process = True
 
-    resourses.update(screen, mp)
+    clock = pygame.time.Clock()
+
+    map_file = resourses.update(screen, mp)
 
     while process:
         if state == free:
@@ -134,6 +136,7 @@ def main():
             resourses.pause(screen, screenshot)
 
         pygame.display.flip()
+        clock.tick(30)
     pygame.quit()
     os.remove(map_file)
 

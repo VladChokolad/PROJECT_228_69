@@ -91,22 +91,22 @@ def interface(screen, mode, screenshot):
         color_text = 'black'
 
     # menu_bar
-    blur_surf = Surface((WIN_WIDTH, 45), pygame.SRCALPHA)
+    blur_surf = Surface((WIN_WIDTH, 44), pygame.SRCALPHA)
     blur_surf.blit(screenshot, (0, 0))
     menu_bar = blurSurf(blur_surf, 44)
     screen.blit(menu_bar, (0, 0))
 
-    create_button(screen, (25, 25), color_rect, (10, 10))
+    # create_button(screen, (25, 25), color_rect, (10, 10))
 
     y = 16
     b = 2
     for i in range(3):
-        pygame.draw.line(screen, color_text, [14, y], [30, y], b)
+        pygame.draw.line(screen, color_rect, [14, y], [30, y], b)
         y += 5
     # write(screen, '<', 15, 21, color_text, 38)
     # pygame.draw.lines(screen, color_text, False, [[27, 15], [16, 22], [27, 29]], 2)
-    create_button(screen, (w_t, 25), color_rect, (40, 10))
-    write(screen, text, 45, 22, color_text, 25)
+    # create_button(screen, (w_t, 25), color_rect, (40, 10))
+    write(screen, text, 45, 22, color_rect, 25)
 
 
 def pause(screen, screenshot):
