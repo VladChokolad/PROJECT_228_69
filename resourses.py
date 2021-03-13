@@ -76,37 +76,40 @@ def interface(screen, mode, screenshot):
     color_text = 'white'
     if mode == 'map':
         text = 'карта'
-        w_t = 56
+        w_t = 45
         color_rect = (43, 43, 43)
-        color_text = 'white'
+        darkness = 12
     elif mode == 'sat':
         text = 'спутник'
-        w_t = 76
-        color_rect = 'white'
-        color_text = 'black'
+        w_t = 63
+        color_rect = (43, 43, 43)
+        darkness = 0
     else:
         text = 'гибрид'
-        w_t = 72
-        color_rect = 'white'
-        color_text = 'black'
+        w_t = 58
+        color_rect = (43, 43, 43)
+        darkness = 0
 
     # menu_bar
     blur_surf = Surface((WIN_WIDTH, 44), pygame.SRCALPHA)
     blur_surf.blit(screenshot, (0, 0))
+    d = Surface((WIN_WIDTH, 44), pygame.SRCALPHA)
+    d.fill((0, 0, 0, darkness))
+    blur_surf.blit(d, (0, 0))
     menu_bar = blurSurf(blur_surf, 44)
     screen.blit(menu_bar, (0, 0))
 
-    # create_button(screen, (25, 25), color_rect, (10, 10))
+    create_button(screen, (240 + w_t, 34), 'white', (5, 5))
 
     y = 16
     b = 2
     for i in range(3):
         pygame.draw.line(screen, color_rect, [14, y], [30, y], b)
         y += 5
-    # write(screen, '<', 15, 21, color_text, 38)
-    # pygame.draw.lines(screen, color_text, False, [[27, 15], [16, 22], [27, 29]], 2)
-    # create_button(screen, (w_t, 25), color_rect, (40, 10))
-    write(screen, text, 45, 22, color_rect, 25)
+    write(screen, text, 237, 22, color_rect, 25)
+
+    # search line
+    create_button(screen, (190, 24), (240, 240, 240), (40, 10))
 
 
 def pause(screen, screenshot):
@@ -123,9 +126,11 @@ def pause(screen, screenshot):
     write(screen, 'Вы уверены, что хотите выйти?', (WIN_WIDTH // 2) - (300 // 2) - 5,
           (WIN_HEIGHT // 2) - 13, (77, 77, 77), 30)
 
-    create_button(screen, (28, 22), (230, 230, 230),
+    button_color = (240, 240, 240)
+
+    create_button(screen, (28, 22), button_color,
                   ((WIN_WIDTH // 2) + (w // 2) - 90, ((WIN_HEIGHT // 2) + (h // 2) - 30)))
-    create_button(screen, (48, 22), (230, 230, 230), ((WIN_WIDTH // 2) + (w // 2) - 55,
+    create_button(screen, (48, 22), button_color, ((WIN_WIDTH // 2) + (w // 2) - 55,
                                                       ((WIN_HEIGHT // 2) + (h // 2) - 30)))
 
     write(screen, 'Нет',

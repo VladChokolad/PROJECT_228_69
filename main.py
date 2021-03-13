@@ -114,7 +114,7 @@ def main():
                             screenshot = Surface(size)
                             screenshot.blit(back, (0, 0))
                             state = pause
-                        if 40 < event.pos[0] < 116:
+                        if 238 < event.pos[0] < 300:
                             mp.type += 1
                             if mp.type > 2:
                                 mp.type -= 3
@@ -135,8 +135,8 @@ def main():
             screen.fill('black')
             resourses.pause(screen, screenshot)
 
+        clock.tick(20)
         pygame.display.flip()
-        clock.tick(30)
     pygame.quit()
     os.remove(map_file)
 
