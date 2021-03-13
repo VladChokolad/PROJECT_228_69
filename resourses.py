@@ -83,23 +83,26 @@ def interface(screen, mode, screenshot, search):
         text = 'схема'
         w_t = 63
         color_rect = (43, 43, 43)
+        color_text = (43, 43, 43)
         darkness = 12
         ex = 9
     elif mode == 'sat':
         text = 'спутник'
         w_t = 63
         color_rect = (43, 43, 43)
+        color_text = 'white'
         darkness = -1
         ex = 0
     else:
         text = 'гибрид'
         w_t = 63
         color_rect = (43, 43, 43)
+        color_text = 'white'
         darkness = -1
         ex = 2
 
     # menu_bar
-    blur_surf = Surface((WIN_WIDTH, 44), pygame.SRCALPHA)
+    blur_surf = Surface((WIN_WIDTH, 68), pygame.SRCALPHA)
     blur_surf.blit(screenshot, (0, 0))
     d = Surface((WIN_WIDTH, 44), pygame.SRCALPHA)
     if darkness < 0:
@@ -122,6 +125,8 @@ def interface(screen, mode, screenshot, search):
 
     # mode text
     write(screen, text, WIN_WIDTH - 12 - w_t + ex, 22, color_rect, 24)
+
+    write(screen, 'Яндекс.Карты', WIN_WIDTH // 2 - 45, 54, color_text, 18)
 
     # search line
     if search:
