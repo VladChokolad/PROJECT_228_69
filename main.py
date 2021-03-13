@@ -23,7 +23,6 @@ geocoder_params = {
 response = requests.get(geocoder_api_server, params=geocoder_params)
 
 if not response:
-    # обработка ошибочной ситуации
     pass
 
 # Преобразуем ответ в json-объект

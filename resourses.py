@@ -71,7 +71,6 @@ def update(screen, mp, inter=False):
 
 
 def interface(screen, mode, screenshot):
-    # create_button(screen, (50, 25), (191, 191, 191), (10, 10), 2)
     color_rect = 'white'
     color_text = 'white'
     if mode == 'map':
