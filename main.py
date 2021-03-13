@@ -48,11 +48,38 @@ def req_search(req):
     # Долгота и широта:
     toponym_longitude, toponym_lattitude = map(float, toponym_coodrinates.split(" "))
 
+    envelope = toponym['boundedBy']['Envelope']
+
+    left, bottom = map(float, envelope['lowerCorner'].split())
+    right, top = map(float, envelope['upperCorner'].split())
+
+    width = float(abs(right - left))
+    height = float(abs(top - bottom))
+
+    if width > height:
+        pam = width
+    else:
+        print(1)
+        pam = height
+
+    zoom = round((pam * 10) ** 1.5)
+    zoom = 19 - zoom + 3
+    if zoom < 2:
+        zoom = 2
+    elif zoom > 17:
+        zoom = 17
+
+    print('pam:', pam)
+    print('pam*10:', pam * 10)
+    print('pam*10 ** 1.5:', (pam * 10) ** 1.5)
+    print('zoom:', zoom)
+    print()
+
     coordinates = ','.join([str(toponym_longitude), str(toponym_lattitude)])
-    return toponym_longitude, toponym_lattitude
+    return toponym_longitude, toponym_lattitude, zoom
 
 
-toponym_longitude, toponym_lattitude = req_search(STOCK_OBJECT)
+toponym_longitude, toponym_lattitude, zoom = req_search(STOCK_OBJECT)
 
 
 def get_layout():
@@ -99,7 +126,7 @@ def main():
     # Инициализируем pygame
     pygame.init()
     screen = pygame.display.set_mode(size, pygame.SRCALPHA)
-    mp = MapParams((toponym_lattitude, toponym_longitude), 16)
+    mp = MapParams((toponym_lattitude, toponym_longitude), zoom)
     map_file = None
     screenshot = None
 
@@ -141,9 +168,9 @@ def main():
                             search = False
                             cur_req = ''
                     elif event.key == 13 and search:
-                        mp.lon, mp.lat = req_search(cur_req)
+                        mp.lon, mp.lat, mp.zoom = req_search(cur_req)
                     mp.update(event, search)
-                    print(event.key)
+                    # print(event.key)
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if 10 < event.pos[1] < 34:
@@ -163,7 +190,7 @@ def main():
                             cur_req = ''
                         elif 40 < event.pos[0] < 516 and not search:
                             search = True
-                    print(event.pos)
+                    # print(event.pos)
             resourses.update(screen, mp, search, True)
             resourses.search_line(screen, cur_req, search)
 
