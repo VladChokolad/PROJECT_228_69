@@ -62,8 +62,8 @@ def req_search(req):
         print(1)
         pam = height
 
-    zoom = round((pam * 10) ** 1.5)
-    zoom = 19 - zoom + 3
+    zoom = round((pam * 10) ** 1.2)
+    zoom = 19 - zoom
     if zoom < 2:
         zoom = 2
     elif zoom > 17:
@@ -71,7 +71,7 @@ def req_search(req):
 
     print('pam:', pam)
     print('pam*10:', pam * 10)
-    print('pam*10 ** 1.5:', (pam * 10) ** 1.5)
+    print('pam*10 ** 1.5:', (pam * 10) ** 1.1)
     print('zoom:', zoom)
     print()
 
