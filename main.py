@@ -130,7 +130,7 @@ def main():
     map_file = None
     screenshot = None
 
-    pygame.display.set_caption("little Yandex.Map")
+    pygame.display.set_caption("Static Yandex.Map")
 
     free, pause = 0, 1
 
